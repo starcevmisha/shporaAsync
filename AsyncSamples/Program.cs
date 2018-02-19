@@ -16,16 +16,16 @@ namespace AsyncSamples
 		{
 			try
 			{
-//				var evnt = ApmTest();
-//				Console.WriteLine("Main thread still working");
-//				evnt.WaitOne();
-//				Console.WriteLine("Main thread finishing");
+				var evnt = ApmTest();
+				Console.WriteLine("Main thread still working");
+				evnt.WaitOne();
+				Console.WriteLine("Main thread finishing");
 
 				Task task;
 //				task = FileContinueWith();
-//				task = FileAsync();
+				task = FileAsync();
 //				task = FileCompareAsync();
-				task = LambdaAsync();
+//				task = LambdaAsync();
 
 //				task = DownloadWebPageAsync();
 
@@ -51,8 +51,9 @@ namespace AsyncSamples
 
 			var evnt = new AutoResetEvent(false);
 
-			using(var fStream = new FileStream("file1.txt", FileMode.Create, FileAccess.ReadWrite, FileShare.None, WRITE_BLOCK_SIZE, FileOptions.WriteThrough))
-			{
+			var fStream = new FileStream("file1.txt", FileMode.Create, FileAccess.ReadWrite, FileShare.None, WRITE_BLOCK_SIZE,
+				FileOptions.WriteThrough);
+			
 				var sw = Stopwatch.StartNew();
 
 				fStream.BeginWrite(buf, 0, buf.Length,
@@ -66,7 +67,7 @@ namespace AsyncSamples
 				Console.WriteLine("Started disk I/O! in {0} ms total (thread {1})", sw.ElapsedMilliseconds, Thread.CurrentThread.ManagedThreadId);
 
 				return evnt;
-			}
+			
 		}
 
 		public static Task FileContinueWith()

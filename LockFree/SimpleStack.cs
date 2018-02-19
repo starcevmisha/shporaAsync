@@ -1,4 +1,4 @@
-﻿namespace LockFree
+﻿    namespace LockFree
 {
     public class SimpleStack<T> : IStack<T>
     {
