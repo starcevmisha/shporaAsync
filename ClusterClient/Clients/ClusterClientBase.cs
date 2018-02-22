@@ -53,7 +53,6 @@ namespace ClusterClient.Clients
                 }
                 catch (OperationCanceledException)
                 {
-                    Console.WriteLine("!!!!");
                     return null;
                 }
             }

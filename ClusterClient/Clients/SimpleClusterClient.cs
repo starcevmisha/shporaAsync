@@ -16,7 +16,6 @@ namespace ClusterClient.Clients
 
         public override async Task<string> ProcessRequestAsync(string query, TimeSpan timeout)
         {
-            var token = new CancellationToken();
             
             var resultTasks = new List<Task<string>>();
             for (var i = 0; i < ReplicaAddresses.Length; i++)
@@ -28,7 +27,6 @@ namespace ClusterClient.Clients
             }
 
             Task<string> firstFinishedTask = await Task.WhenAny(resultTasks);
-            token.ThrowIfCancellationRequested();
 
 
             return firstFinishedTask.Result;

@@ -53,6 +53,7 @@
     <Compile Include="Clients\RandomClusterClient.cs" />
     <Compile Include="Clients\RoundRobinClusterClient.cs" />
     <Compile Include="Clients\SimpleClusterClient.cs" />
+    <Compile Include="Clients\CancellingClusterClient.cs" />
     <Compile Include="Clients\SmartClusterClient.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

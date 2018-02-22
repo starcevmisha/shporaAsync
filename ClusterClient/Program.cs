@@ -27,7 +27,9 @@ namespace ClusterClient
 //                                  new SimpleClusterClient(replicaAddresses),
 //                                  new RandomClusterClient(replicaAddresses),
 //                                  new RoundRobinClusterClient(replicaAddresses), 
-                                  new SmartClusterClient(replicaAddresses),
+//                                  new CancellingClusterClient(replicaAddresses),
+                                  new SmartClusterClient(replicaAddresses), 
+
 
                               };
                 var queries = new[] {"От", "топота", "копыт", "пыль", "по", "полю", "летит", "На", "дворе", "трава", "на", "траве", "дрова"};
@@ -41,7 +43,7 @@ namespace ClusterClient
                             var timer = Stopwatch.StartNew();
                             try
                             {
-                                await client.ProcessRequestAsync(query, TimeSpan.FromSeconds(6));
+                                await client.ProcessRequestAsync(query, TimeSpan.FromMilliseconds(1600.0));
 
                                 Console.WriteLine("Processed query \"{0}\" in {1} ms", query, timer.ElapsedMilliseconds);
                             }

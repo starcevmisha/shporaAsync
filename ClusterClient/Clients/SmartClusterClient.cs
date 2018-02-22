@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,8 +23,9 @@ namespace ClusterClient.Clients
                 .ToList();
 
             var timeoutOneTask = new TimeSpan(timeout.Ticks / ReplicaAddresses.Length);
+
+            var resultTasks = new List<Task>();
             
-            var token = new CancellationTokenSource();
 
             
             foreach (var i in randomOrder)
@@ -31,17 +33,20 @@ namespace ClusterClient.Clients
                 var uri = ReplicaAddresses[i];
                 var webRequest = CreateRequest(uri + "?query=" + query);
                 Log.InfoFormat("Processing {0}", webRequest.RequestUri);
-                var resultTask = ProcessRequestAsync(webRequest, token);
-                await Task.WhenAny(resultTask, Task.Delay(timeoutOneTask));
+                var resultTask = ProcessRequestAsync(webRequest);
+                var timerTask = Task.Delay(timeoutOneTask);
+                resultTask.Start();
+                resultTasks.Add(resultTask);
+                resultTasks.Add(timerTask);
+                timerTask.Start();
+                await Task.WhenAny(resultTasks);
                 if (!resultTask.IsCompleted)
                     continue;
-                token.Cancel();
                 return resultTask.Result;
             }
 
             throw new TimeoutException();
         }
-
 
         protected override ILog Log => LogManager.GetLogger(typeof(RandomClusterClient));
     }
