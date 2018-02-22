@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,11 +6,11 @@ using log4net;
 
 namespace ClusterClient.Clients
 {
-    public class RoundRobinClusterClient : ClusterClientBase
+    public class SmartClusterClient : ClusterClientBase
     {
         private Random rand = new Random();
 
-        public RoundRobinClusterClient(string[] replicaAddresses) : base(replicaAddresses)
+        public SmartClusterClient(string[] replicaAddresses) : base(replicaAddresses)
         {
         }
 
@@ -24,7 +23,7 @@ namespace ClusterClient.Clients
 
             var timeoutOneTask = new TimeSpan(timeout.Ticks / ReplicaAddresses.Length);
             
-            var token = new CancellationToken();
+            var token = new CancellationTokenSource();
 
             
             foreach (var i in randomOrder)
@@ -32,15 +31,17 @@ namespace ClusterClient.Clients
                 var uri = ReplicaAddresses[i];
                 var webRequest = CreateRequest(uri + "?query=" + query);
                 Log.InfoFormat("Processing {0}", webRequest.RequestUri);
-                var resultTask = ProcessRequestAsync(webRequest);
+                var resultTask = ProcessRequestAsync(webRequest, token);
                 await Task.WhenAny(resultTask, Task.Delay(timeoutOneTask));
                 if (!resultTask.IsCompleted)
                     continue;
+                token.Cancel();
                 return resultTask.Result;
             }
 
             throw new TimeoutException();
         }
+
 
         protected override ILog Log => LogManager.GetLogger(typeof(RandomClusterClient));
     }

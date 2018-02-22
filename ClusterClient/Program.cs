@@ -24,9 +24,11 @@ namespace ClusterClient
             {
                 var clients = new ClusterClientBase[]
                               {
-                                  new SimpleClusterClient(replicaAddresses),
-                                  new RandomClusterClient(replicaAddresses),
-                                  new RoundRobinClusterClient(replicaAddresses), 
+//                                  new SimpleClusterClient(replicaAddresses),
+//                                  new RandomClusterClient(replicaAddresses),
+//                                  new RoundRobinClusterClient(replicaAddresses), 
+                                  new SmartClusterClient(replicaAddresses),
+
                               };
                 var queries = new[] {"От", "топота", "копыт", "пыль", "по", "полю", "летит", "На", "дворе", "трава", "на", "траве", "дрова"};
 
