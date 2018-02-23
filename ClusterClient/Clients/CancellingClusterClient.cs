@@ -23,35 +23,24 @@ namespace ClusterClient.Clients
                 .ToList();
 
             var timeoutOneTask = new TimeSpan(timeout.Ticks / ReplicaAddresses.Length);
-            
+
             var token = new CancellationTokenSource();
-            
-            var resultTasks = new List<Task<string>>();
+
+            var resultTasks = new List<Task>();
+            var timer = Task.Delay(timeout);
             for (var i = 0; i < ReplicaAddresses.Length; i++)
             {
                 var uri = ReplicaAddresses[i];
-                var webRequest = CreateRequest(uri + "?query=" + query);            
+                var webRequest = CreateRequest(uri + "?query=" + query);
                 Log.InfoFormat("Processing {0}", webRequest.RequestUri);
                 resultTasks.Add(ProcessRequestAsync(webRequest, token));
             }
 
-            Task<string> firstFinishedTask = await Task.WhenAny(resultTasks);
+            var firstFinishedTask = await Task.WhenAny(resultTasks);
             token.Cancel();
-            return firstFinishedTask.Result;
-//            foreach (var i in randomOrder)
-//            {
-//                var uri = ReplicaAddresses[i];
-//                var webRequest = CreateRequest(uri + "?query=" + query);
-//                Log.InfoFormat("Processing {0}", webRequest.RequestUri);
-//                var resultTask = ProcessRequestAsync(webRequest, token);
-//                await Task.WhenAny(resultTask, Task.Delay(timeoutOneTask));
-//                if (!resultTask.IsCompleted)
-//                    continue;
-//                token.Cancel();
-//                return resultTask.Result;
-//            }
-
-//            throw new TimeoutException();
+            if (firstFinishedTask == timer)
+                throw new TimeoutException();
+            return ((Task<string>) firstFinishedTask).Result;
         }
 
 

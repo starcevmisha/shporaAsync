@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 using log4net;
 
 namespace ClusterClient.Clients
 {
     public class SmartClusterClient : ClusterClientBase
     {
-        private Random rand = new Random();
 
         public SmartClusterClient(string[] replicaAddresses) : base(replicaAddresses)
         {
@@ -17,33 +17,35 @@ namespace ClusterClient.Clients
 
         public override async Task<string> ProcessRequestAsync(string query, TimeSpan timeout)
         {
-            var randomOrder = Enumerable
-                .Range(0, ReplicaAddresses.Length)
-                .OrderBy(c => rand.Next(100))
-                .ToList();
+            var resultTasks = new List<Task>();
 
             var timeoutOneTask = new TimeSpan(timeout.Ticks / ReplicaAddresses.Length);
 
-            var resultTasks = new List<Task>();
-            
+            var timer = Task.Delay(timeoutOneTask);
 
-            
-            foreach (var i in randomOrder)
+            resultTasks.Add(timer);
+
+            for (int i = 0; i < ReplicaAddresses.Length; i++)
             {
+                
                 var uri = ReplicaAddresses[i];
                 var webRequest = CreateRequest(uri + "?query=" + query);
                 Log.InfoFormat("Processing {0}", webRequest.RequestUri);
-                var resultTask = ProcessRequestAsync(webRequest);
-                var timerTask = Task.Delay(timeoutOneTask);
-                resultTask.Start();
-                resultTasks.Add(resultTask);
-                resultTasks.Add(timerTask);
-                timerTask.Start();
-                await Task.WhenAny(resultTasks);
-                if (!resultTask.IsCompleted)
-                    continue;
-                return resultTask.Result;
+                resultTasks.Add(ProcessRequestAsync(webRequest));
+                
+                var completed = await Task.WhenAny(resultTasks);
+                Console.WriteLine(i);
+                if (completed is Task<string>)
+                {
+                    await Task.WhenAll(resultTasks);
+                    return ((Task<string>)completed).Result;
+                }
+
+                Log.InfoFormat("Timeout!!!", webRequest.RequestUri);
+                resultTasks[0] = Task.Delay(timeoutOneTask);
             }
+
+
 
             throw new TimeoutException();
         }

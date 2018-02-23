@@ -43,7 +43,7 @@ namespace ClusterClient
                             var timer = Stopwatch.StartNew();
                             try
                             {
-                                await client.ProcessRequestAsync(query, TimeSpan.FromMilliseconds(1600.0));
+                                await client.ProcessRequestAsync(query, TimeSpan.FromMilliseconds(1500.0));
 
                                 Console.WriteLine("Processed query \"{0}\" in {1} ms", query, timer.ElapsedMilliseconds);
                             }

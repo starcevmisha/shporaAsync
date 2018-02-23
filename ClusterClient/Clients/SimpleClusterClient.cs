@@ -18,9 +18,8 @@ namespace ClusterClient.Clients
         {
             
             var resultTasks = new List<Task<string>>();
-            for (var i = 0; i < ReplicaAddresses.Length; i++)
+            foreach (var uri in ReplicaAddresses)
             {
-                var uri = ReplicaAddresses[i];
                 var webRequest = CreateRequest(uri + "?query=" + query);            
                 Log.InfoFormat("Processing {0}", webRequest.RequestUri);
                 resultTasks.Add(ProcessRequestAsync(webRequest));
