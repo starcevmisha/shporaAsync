@@ -37,7 +37,7 @@ namespace ClusterClient.Clients
                 Console.WriteLine(i);
                 if (completed is Task<string>)
                 {
-                    await Task.WhenAll(resultTasks);
+                    await Task.WhenAll(resultTasks);//Почему без этого отсальные не продолжат работать?
                     return ((Task<string>)completed).Result;
                 }
 

@@ -24,10 +24,10 @@ namespace ClusterClient
             {
                 var clients = new ClusterClientBase[]
                               {
-//                                  new SimpleClusterClient(replicaAddresses),
-//                                  new RandomClusterClient(replicaAddresses),
-//                                  new RoundRobinClusterClient(replicaAddresses), 
-//                                  new CancellingClusterClient(replicaAddresses),
+                                  new SimpleClusterClient(replicaAddresses),
+                                  new RandomClusterClient(replicaAddresses),
+                                  new RoundRobinClusterClient(replicaAddresses), 
+                                  new CancellingClusterClient(replicaAddresses),
                                   new SmartClusterClient(replicaAddresses), 
 
 
