@@ -17,13 +17,6 @@ namespace ClusterClient.Clients
 
         public override async Task<string> ProcessRequestAsync(string query, TimeSpan timeout)
         {
-            var randomOrder = Enumerable
-                .Range(0, ReplicaAddresses.Length)
-                .OrderBy(c => rand.Next(100))
-                .ToList();
-
-            var timeoutOneTask = new TimeSpan(timeout.Ticks / ReplicaAddresses.Length);
-
             var token = new CancellationTokenSource();
 
             var resultTasks = new List<Task>();

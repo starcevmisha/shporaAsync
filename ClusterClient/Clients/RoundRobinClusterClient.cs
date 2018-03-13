@@ -24,9 +24,6 @@ namespace ClusterClient.Clients
 
             var timeoutOneTask = new TimeSpan(timeout.Ticks / ReplicaAddresses.Length);
             
-            var token = new CancellationToken();
-
-            
             foreach (var i in randomOrder)
             {
                 var uri = ReplicaAddresses[i];
